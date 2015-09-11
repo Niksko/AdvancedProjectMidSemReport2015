@@ -56,10 +56,11 @@ In order to enumerate and add all of the terms in this infinite sum, I have desi
     \item[Initialize] Create a FIFO queue, and add the entry (1, '', ''). This represents a coefficient of 1, and two empty histories.
     \item[1] Remove the first item from the queue. Take the histories and initialise the players to have those histories.
     \item[2] Compute the next move that would occur for each player, given the past histories.
-    \item[3] For each of the possible sets of mistakes (no mistake, one mistake two different ways, two mistakes), compute the probability of this occurring . We can compute this by multiplying the probability of the event occurring in this round (ie.the continuation probability $\delta$ multiplied by the appropriate mistake probability) by the coefficient in the data we removed from the queue.
-    \item[4] For each possible set of mistakes, compute the payoff. We will need to multiply the coefficient compute in step 3 by the value in the payoff matrix for this particular move combination.
-    \item[5] For each of the terms computed in step 4, if the term is larger than some threshold (a chosen parameter which determines when we begin to truncate the sum), we add a new entry to the queue which consists of the coefficient from step 3, and the previous history of each player along with the next move computed in step 1, modifying the move based on mistakes.
-    \item[6] Go to step 1 and repeat
+    \item[3] For each of the possible sets of mistakes (no mistake, one mistake two different ways, two mistakes), compute the probability of this event occurring. We can compute this by multiplying the probability of the event occurring in this round (ie.the continuation probability $\delta$ multiplied by the appropriate mistake probability) by the coefficient obtained from the queue.
+    \item[4] For each possible set of mistakes, compute the payoff. We will need to multiply the coefficient computed in step 3 by the value in the payoff matrix for this particular move combination.
+    \item[5] Add the term to an accumulator.
+    \item[6] For each of the terms computed in step 4, if the term is larger than some threshold (a chosen parameter which determines when we begin to truncate the sum), we add a new entry to the queue which consists of the coefficient from step 3, and the history associated with that coefficient.
+    \item[7] Go to step 1 and repeat
 \end{enumerate}
 
 Eventually all the terms will be below the threshold, the queue will empty and the sum will terminate.
@@ -69,6 +70,20 @@ The advantages of this method over a simple sum are:
 
     \item Since we throw away terms when they become too small on a term-by-term basis, we greatly reduce the number of terms computed compared with an algorithm which simply computes terms to a given number of moves. In effect we are pruning unlikely paths on the outcome tree as soon as their likelihoods become small.
     \item This algorithm should be easy to parallelize since it makes use of the common 'multi-producer, multi-consumer' pattern via the queue.
+
+\end{itemize}
+
+So far I have implemented this method, but have not yet implemented the multiprocessed version.
+
+\section*{Plans}
+
+The plans for this project are to:
+\begin{itemize}
+
+    \item Implement a multiprocessed version of the algorithm described above
+    \item Further optimise the above algorithm. The first attempt at optimisation will be to remove redundant cases (cases with identical histories) by summing their coefficients and then rolling them in to one entry in the queue. This may require a different data structure, and will require careful balancing to ensure that the overhead from merging cases does not exceed the performance gains from doing so.
+    \item Investigate the expected payoff of strategies that 'count'.
+    \item Simulate the evolutionary dynamics of such 'counting' strategies.
 
 \end{itemize}
 
