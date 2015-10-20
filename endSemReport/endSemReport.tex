@@ -1,5 +1,5 @@
-\documentclass[a4paper,11pt]{article}
-\usepackage[top=0.5cm, bottom=1.5cm, left=1.3cm, right=1.3cm]{geometry}
+\documentclass[a4paper,12pt]{article}
+\usepackage[margin=1in]{geometry}
 \usepackage[colorlinks = true, citecolor=red, urlcolor=blue]{hyperref}
 
 \parindent=2pt
@@ -24,6 +24,8 @@ The results of these fast methods were then used to generate three-population si
 
 \section*{Introduction}
 
+\subsection*{Prisoner's Dilemma}
+
 The iterated prisoner's dilemma is an archetypal problem in game theory, particularly in the study of the evolution of cooperation.
 The iterated prisoner's dilemma involves two prisoners, each of which has two moves available to them.
 The prisoner's are told of the two options available to them, and they are told that they have 24 hours to make a decision or they will be punished.
@@ -41,8 +43,64 @@ An important concept in game theory is that of the Nash equilibrium.
 The Nash equilibrium is a set of strategies where each player cannot improve their own outcome by changing their strategy while the opponent's strategy remains the same.
 This means that in effect, a Nash equilibrium is the optimal result for all players.
 It is a well known result in game theory that the only Nash equilibrium in the prisoner's dilemma is for both players to defect.
-However this result is only valid for the single-shot prisoner's dilemma ie\. the prisoner's dilemma where the players only play the game once.
+However this result is only valid for the single-shot prisoner's dilemma ie. the prisoner's dilemma where the players only play the game once.
 If players player multiple times, more complex strategies can emerge and there emerges an incentive for mutual cooperation~\cite{trivers}.
+This problem is known as the `iterated prisoner's dilemma'.
+
+One issue with the iterated prisoner's dilemma is that if players know ahead of time how many rounds of the prisoner's dilemma they will play, the cooperation breaks down.
+Since there are no repercussions for defecting in the final round (because there are no more rounds in which the opponent can retaliate), it is always best to defect.
+However if it is optimal for both players to defect in the final round, then logically there are no repercussions for defecting in the second-to-last round either.
+By this logic, the optimal strategy is simply to always defect.
+In order to overcome this predictable and uninteresting pattern, we introduce the idea that the game length is determined by a repeated random event.
+After playing the first and subsequent rounds, the game continues for another round with probability $0 < \delta < 1$.
+This means that there is a always a chance that there will be another round of the game, and thus there is always the possibility that defection will carry consequences.
+
+\subsection*{Expected Payoff}
+
+The different moves and their respective outcomes of the prisoner's dilemma are generally abbreviated, and we will use these abbreviations from here onwards.
+Cooperation and defection are usually abbreviated to C and D respectively.
+The payoff for mutual cooperation is abbreviated to R for reward.
+The payoff for mutual defection is abbreviated to P for punishment.
+If one player defects and the other cooperates, the defector is said to receive the T (for temptation) payoff and the cooperator receives the S (for sucker) payoff.
+
+When playing the iterated prisoner's dilemma, many different strategies are possible.
+The most basic of strategies is to unconditionally perform the same action: unconditionally defect or unconditionally cooperate.
+These strategies are known as Always Defect (AllD) and Always Cooperate (AllC) respectively.
+More complicated strategies include:
+
+\begin{itemize}
+    \item Tit For Tat (TFT): If the opponent cooperate last round, you cooperate. If the opponent defected last round, you defect. In the first round, the player cooperates.
+    \item Win Stay, Lose Shift (WSLS): If the outcome is a win for the player (R payoff or T payoff) then the previous move is repeated. If the outcome is a lose for the player (P payoff or S payoff) then the opposite move is chosen in the next round.
+    \item Grim: Cooperates until the opponent defects, and then unconditionally defects from then on.
+\end{itemize}
+
+It is useful to be able to compare the effectiveness of each of these strategies when paired against another strategy.
+For simple cases such as AllC against AllD, AllD is trivially the superior strategy.
+However in more complicated cases, it becomes necessary to use a metric to evaluate the performance of a strategy.
+The most commonly used metric is the expected payoff.
+
+The expected payoff is defined as the expected value of the payoff of one strategy when pitted against another strategy.
+For deterministic strategies, this can easily be computed with an infinite sum \cite{garciaandtraulsen}:
+
+\begin{equation}
+    \sum_{i=0}^{\infty} \delta^i \pi_i
+\end{equation}
+
+where $\delta$ is the continuation probability and $\pi_i$ is the payoff of the strategy in round $i$.
+
+This sum holds for any pair of deterministic strategies.
+This sum is straight-forward to compute programatically, however when we move to non-deterministic strategies it quickly becomes difficult.
+Any strategy that employs non-deterministic play styles (eg. defect 75% of the time, cooperate the other 25%) introduces additional options in the outcome space which must be accounted for.
+We must now multiply the continuation probability by the probability of that particular outcome, and we have to continue this `branch' of the outcome tree forever.
+For more complex strategies, the space of outcomes quickly becomes very large, and consequently, the expected payoff becomes very difficult to compute.
+
+\subsection*{Mistakes}
+
+Another possible complication of the outcome space is the addition of mistakes.
+Mistakes occur when a player intends to play a particular move, but instead they play a different move.
+In the context of the iterated prisoner's dilemma, this occurs when a player intends to cooperate, but instead they defect (or vice-versa).
+Since mistakes are probabilistic and can occur at any round, they serve to worsen the problem of exploding outcome space and associated difficulty in calculating expected payoffs.
+This project's primary goal was to determine a method of computing the expected payoff of an iterated prisoner's dilemma with mistakes in an efficient manner.
 
 \begin{thebibliography}{9}
 
