@@ -9,83 +9,38 @@
 
 \title{Repeated games with mistakes}
 \author{Nikolas M. Skoufis \\ Supervisor: Julian Garcia}
-\date{September 11th, 2014}
+\date{October 20th, 2015}
 
 \maketitle
 
-\section*{Objectives}
+\section*{Abstract}
 
-The objectives of this project are to:
+This project studies efficient methods to compute the expected payoff of an iterated prisoner's dilemma between two opponents.
+In order to efficiently compute these payoffs, the mathematics underpinning the iterated prisoners dilemma and the computation of expected payoff was analyzed with a view to improving in speed of computation over existing methods.
+A Monte-Carlo method of computing expected payoff was used as a benchmark against which two fast methods for computing payoff were compared.
+The results of these fast methods were then used to generate three-population simplex plots of evolutionary dynamics as a further benchmark.
 
-\begin{itemize}
+\section*{Introduction}
 
-    \item study the expected payoff structure of repeated games with mistakes using the prisoner's dilemma as a model game.
-    \item design an algorithm for efficiently computing the expected payoff of each player in the iterated prisoner's dilemma with mistakes.
-    \item learn about tools to speed up numerical calculations in Python such as profiling and multiprocessing.
-    \item study strategies that 'count' particular outcomes and how they perform in the iterated prisoner's dilemma with mistakes.
+The iterated prisoner's dilemma is an archetypal problem in game theory, particularly in the study of the evolution of cooperation.
+The iterated prisoner's dilemma involves two prisoners, each of which has two moves available to them.
+The prisoner's are told of the two options available to them, and they are told that they have 24 hours to make a decision or they will be punished.
+Each player can either inform on the other player (known as \textit{defection}) or stay silent (known as \textit{cooperation}).
+If both prisoners defect, will both spend 10 years in prison.
+If both prisoners cooperate, they will each spend only 5 years in prison; a better outcome for both.
+However if one prisoner cooperates and the other defects, the prisoner who defected goes free, and the prisoner that cooperated will spend 20 years in prison; longer than any other option.
 
-\end{itemize}
+Given these options and outcomes, we can see that a natural dilemma arises.
+If a player cooperates, they may receive a better outcome than if they had defected, depending on the other player's action.
+However if they defect, they have the opportunity for best possible outcome (going free), but they also risk punishment if the other player defects.
+This problem is the prisoner's dilemma.
 
-\section*{Progress}
-
-My work in this project so far has been focussed on laying the foundations for studying the repeated prisoner's dilemma with mistakes.
-To this end I have implemented a \texttt{Strategy} class which implements basic functionality of a strategy such as tracking the player's history and computing the next move for the player.
-This \texttt{Strategy} class is never instantiated directly, but is instead subclassed by concrete implementations of strategies ie. \texttt{AllC}, \texttt{AllD}, \texttt{TitForTat} etc.
-This implementation should allow for any strategy to be implemented (including non-deterministic strategies) since the method that computes the next move for the strategy knows about both the player's own history as well as being passed the opponent's history.
-
-Once the strategy implementation and signature was finalised, I was able to implement methods that would compute the expected payoff when different strategies play each other.
-Initially I considered the scenario without mistakes.
-This resulted in two different methods for calculating this expected payoff: a method based on an infinite sum (as described in the appendix of \cite{garciaandtraulsen}) and a method based on Monte Carlo simulation.
-Although this project is primarily concerned with the infinite sum method, it is useful to have a working Monte Carlo simulation for approximating these values.
-This Monte Carlo simulation becomes useful when we stray outside the simple combinations of strategies that have been considered so far and into more complex strategies or combinations which lack closed form solutions against which we can check our caclulations.
-
-In order to verify that the implementations of these methods were correct, eight simple strategies were implemented as subclasses of the \texttt{Strategy} class.
-These strategies represent the eight deterministic strategies that only track the opponent's last move.
-The results from the infinite sum (herin the calculation method), the Monte Carlo simulation and the exact closed-form results (as described in \cite{garciaandtraulsen} were then compared over the 64 possible strategy combinations as a method of verification.
-The Monte Carlo method offers a fixed trials mode where the number of trials is predetermined.
-Alternatively if the user wishes to guarantee the distribution of their compute Monte Carlo result (as described in \cite{ross}), the trials are repeated until the desired standard deviation is achieved.
-As an added level of verification, I utilised the {\em Hypothesis} \cite{hypothesis} library in order to systematically check possible edge cases in both the calculation methods as well as the strategy framework.
-
-Once these methods had been implemented, the next step was to add mistakes.
-Implementing mistakes in the Monte Carlo method is relatively straight-forward, and I have also succeeded in parallelising this code.
-The parallel implementation of the Monte Carlo method distributes the desired number of trials across the available cores, speeding up execution greatly.
-Adding mistakes to the calculation method has proved more difficult, since the number of terms in the sum grows exponentially.
-In order to enumerate and add all of the terms in this infinite sum, I have designed the following algorithm:
-
-\begin{enumerate}
-    \item[Initialize] Create a FIFO queue, and add the entry (1, '', ''). This represents a coefficient of 1, and two empty histories.
-    \item[1] Remove the first item from the queue. Take the histories and initialise the players to have those histories.
-    \item[2] Compute the next move that would occur for each player, given the past histories.
-    \item[3] For each of the possible sets of mistakes (no mistake, one mistake two different ways, two mistakes), compute the probability of this event occurring. We can compute this by multiplying the probability of the event occurring in this round (ie.the continuation probability $\delta$ multiplied by the appropriate mistake probability) by the coefficient obtained from the queue.
-    \item[4] For each possible set of mistakes, compute the payoff. We will need to multiply the coefficient computed in step 3 by the value in the payoff matrix for this particular move combination.
-    \item[5] Add the term to an accumulator.
-    \item[6] For each of the terms computed in step 4, if the term is larger than some threshold (a chosen parameter which determines when we begin to truncate the sum), we add a new entry to the queue which consists of the coefficient from step 3, and the history associated with that coefficient.
-    \item[7] Go to step 1 and repeat
-\end{enumerate}
-
-Eventually all the terms will be below the threshold, the queue will empty and the sum will terminate.
-The advantages of this method over a simple sum are:
-
-\begin{itemize}
-
-    \item Since we throw away terms when they become too small on a term-by-term basis, we greatly reduce the number of terms computed compared with an algorithm which simply computes terms to a given number of moves. In effect we are pruning unlikely paths on the outcome tree as soon as their likelihoods become small.
-    \item This algorithm should be easy to parallelize since it makes use of the common 'multi-producer, multi-consumer' pattern via the queue.
-
-\end{itemize}
-
-So far I have implemented this method, but have not yet implemented the multiprocessed version.
-
-\section*{Plans}
-
-The plans for this project are to:
-\begin{itemize}
-
-    \item Implement a multiprocessed version of the algorithm described above
-    \item Further optimise the above algorithm. The first attempt at optimisation will be to remove redundant cases (cases with identical histories) by summing their coefficients and then rolling them in to one entry in the queue. This may require a different data structure, and will require careful balancing to ensure that the overhead from merging cases does not exceed the performance gains from doing so.
-    \item Investigate the expected payoff of strategies that 'count'.
-    \item Simulate the evolutionary dynamics of such 'counting' strategies.
-
-\end{itemize}
+An important concept in game theory is that of the Nash equilibrium.
+The Nash equilibrium is a set of strategies where each player cannot improve their own outcome by changing their strategy while the opponent's strategy remains the same.
+This means that in effect, a Nash equilibrium is the optimal result for all players.
+It is a well known result in game theory that the only Nash equilibrium in the prisoner's dilemma is for both players to defect.
+However this result is only valid for the single-shot prisoner's dilemma ie\. the prisoner's dilemma where the players only play the game once.
+If players player multiple times, more complex strategies can emerge and there emerges an incentive for mutual cooperation~\cite{trivers}.
 
 \begin{thebibliography}{9}
 
@@ -96,6 +51,14 @@ The plans for this project are to:
         Vol. 7,
         No. 4,
         2012.
+
+    \bibitem{trivers}
+        Robert Trivers,
+        \emph{The Evolution of Reciprocal Altruism},
+        The Quarterly Review of Biology,
+        Vol. 46,
+        No. 1,
+        1971.
 
     \bibitem{hypothesis}
         David R. MacIver,
