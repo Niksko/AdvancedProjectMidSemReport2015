@@ -22,9 +22,9 @@ The results of these fast methods were then used to generate three-population si
 
 \end{abstract}
 
-\section*{Introduction}
+\section{Introduction}
 
-\subsection*{Prisoner's Dilemma}
+\subsection{Prisoner's Dilemma}
 
 The iterated prisoner's dilemma is an archetypal problem in game theory, particularly in the study of the evolution of cooperation.
 The iterated prisoner's dilemma involves two prisoners, each of which has two moves available to them.
@@ -55,7 +55,7 @@ In order to overcome this predictable and uninteresting pattern, we introduce th
 After playing the first and subsequent rounds, the game continues for another round with probability $0 < \delta < 1$.
 This means that there is a always a chance that there will be another round of the game, and thus there is always the possibility that defection will carry consequences.
 
-\subsection*{Expected Payoff}
+\subsection{Expected Payoff}
 
 The different moves and their respective outcomes of the prisoner's dilemma are generally abbreviated, and we will use these abbreviations from here onwards.
 Cooperation and defection are usually abbreviated to C and D respectively.
@@ -94,7 +94,7 @@ Any strategy that employs non-deterministic play styles (eg. defect 75\% of the 
 We must now multiply the continuation probability by the probability of that particular outcome, and we have to continue this `branch' of the outcome tree forever.
 For more complex strategies, the space of outcomes quickly becomes very large, and consequently, the expected payoff becomes very difficult to compute.
 
-\subsection*{Mistakes and fault tolerant strategies}
+\subsection{Mistakes and fault tolerant strategies}
 
 Another possible complication of the outcome space is the addition of mistakes.
 Mistakes occur when a player intends to play a particular move, but instead they play a different move.
@@ -113,7 +113,7 @@ A fault tolerant strategy is a strategy that is able to retain this robust quali
 Since TFT is not particularly fault tolerant, modern game theorists have attempted to study strategies that are able to deal with faults while still remaining competitive.
 And in order to evaluate these strategies, it becomes necessary to efficiently and easily calculate their expected payoffs against other strategies.
 
-\section*{Software tools and techniques}
+\section{Software tools and techniques}
 
 In order to study the expected payoff, it was necessary to first design a software framework that allows for the construction, simulation and computation of scenarios in game theory.
 The code used in this project is open sourced under the GNU GPL v3 license and is available at https://github.com/computationalevolutionarydynamics/repeatedmistakes.
@@ -122,7 +122,7 @@ Python was chosen as the language for development of this framework, due to both
 In particular, this project made use of the Hypothesis property-based testing library \cite{hypothesis} and the Nose testing framework \cite{nose}.
 I also used the Travis CI continuous integration service and the Coveralls test coverage service.
 
-\subsection*{Hypothesis and Nose}
+\subsection{Hypothesis and Nose}
 The Hypothesis library is inspired by the Haskell library `Quickcheck', and is a property-based form of testing.
 The chief difference is that instead of defining in terms of specific inputs and outputs, you define tests in terms of classes of input and their expected output.
 Hypothesis uses in intelligent search strategy to attempt to produce an input which falsifies the property.
@@ -157,7 +157,7 @@ A key reason behind my use of Nose is that Nose allows for what it calls 'test g
 Test generators allow for generation of multiple tests over a variety of input data.
 This feature was also useful when evaluating the correctness of the strategies that were implemented.
 
-\subsection*{Travis and Coveralls}
+\subsection{Travis and Coveralls}
 
 In order to easily keep track of the status of the unit tests, I used the Travis CI continuous integration service.
 Travis CI can be configured to automatically build your project, and then to run any tests you have implemented.
@@ -172,7 +172,7 @@ This service integrates with Travis to automatically generate test coverage repo
 
 Both of these services offer badges (dynamically updated images) that can be displayed on Github so that it's easy to see at a glance whether your build is passing and how much of the code base is covered by your tests.
 
-\section*{Software framework}
+\section{Software framework}
 
 To this end I implemented a \texttt{Strategy} class which implements basic functionality of a strategy such as tracking the player's history and computing the next move for the player.
 This \texttt{Strategy} class is never instantiated directly, but is instead subclassed by concrete implementations of strategies eg. \texttt{AllC}, \texttt{AllD}, \texttt{TitForTat} etc.
