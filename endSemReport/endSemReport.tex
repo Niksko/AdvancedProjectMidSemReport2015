@@ -120,23 +120,60 @@ The code used in this project is open sourced under the GNU GPL v3 license and i
 
 Python was chosen as the language for development of this framework, due to both the author's familiarity with the language coupled with high quality libraries for numerical calculations, visualization and testing.
 In particular, this project made use of the Hypothesis property-based testing library \cite{hypothesis} and the Nose testing framework \cite{nose}.
+I also used the Travis CI continuous integration service and the Coveralls test coverage service.
 
+\subsection*{Hypothesis and Nose}
 The Hypothesis library is inspired by the Haskell library `Quickcheck', and is a property-based form of testing.
 The chief difference is that instead of defining in terms of specific inputs and outputs, you define tests in terms of classes of input and their expected output.
 Hypothesis uses in intelligent search strategy to attempt to produce an input which falsifies the property.
 Hypothesis then reduces this input to the minimum falsifying example and returns this.
 
-As an example, here is how we might test a \texttt{reverse} method with conventional testing:
+As an example, here is how we might test a \texttt{reverse} method with conventional testing and with Hypothesis:
 
-Under Hypothesis, we can define a test
+\begin{itemize}
+    \item Conventional: when called with the input \texttt{foobar}, the method should return \texttt{raboof}.
+    \item Hypothesis: when called with any string, the method should return the reverse of that string.
+\end{itemize}
 
-<Talk about Nose a little>
+Clearly the Hypothesis version is much more powerful and expressive.
+For example, if the \texttt{reverse} method didn't correctly handle empty strings, then Hypothesis would catch this and return it to the user.
 
-<Talk about Travis>
+Hypothesis proved to be an invaluable tool in this project because it allowed me to define the general properties that should be obeyed for any strategy and any history, and then evaluate my implementations of the strategies against these properties.
 
-<Talk about coverage>
+One issue I ran into with using Hypothesis was running tests can be slow when compared to standard unit testing.
+For example, running a test to ensure that strategies always return the correct length of history over 8 different strategies can take on the order of seconds.
+Although this is not a huge concern, this did cause some issues with Travis as discussed below.
+
+Another issue with Hypothesis is that occasionally it would produce an error because it was unable to produce enough test data satisfied the requirements given.
+This is most likely due to inexperience with Hypothesis, and could likely be remedied by optimizing the functions that construct test data.
+
+Finally, since Hypothesis's testing is fundamentally probabilistic in nature, occasionally tests would fail even though the code that changed did not affect them.
+This occurs because Hypothesis uses some randomized test data to find edge cases, and sometimes that test data doesn't hit upon a falsifying example.
+This can be remedied by increasing the number of examples to test for each property, however there is always the possibility that a falsifying example will be skipped over.
+
+In addition to Hypothesis, I made use of the Nose testing framework.
+Nose aims to be a replacement for Python's default \texttt{unittest} library, with an emphasis on simpler and more readable test code.
+A key reason behind my use of Nose is that Nose allows for what it calls 'test generators'.
+Test generators allow for generation of multiple tests over a variety of input data.
+This feature was also useful when evaluating the correctness of the strategies that were implemented.
+
+\subsection*{Travis and Coveralls}
+
+In order to easily keep track of the status of the unit tests, I used the Travis CI continuous integration service.
+Travis CI can be configured to automatically build your project, and then to run any tests you have implemented.
+Travis builds and runs the tests upon every Github commit, so it is a valuable tool in ensuring that new code does not cause tests to fail.
+
+As mentioned in the previous section, some issues occurred when using Travis with Hypothesis.
+Since some tests took a very long time to execute, an additional option had to be set in Travis to allow for long periods of time without output.
+Even with this setting, builds sometimes failed because Travis has an upper limit on how long it will wait before timing out.
+
+To assess the test coverage of the tests I had written, I used the Coveralls service.
+This service integrates with Travis to automatically generate test coverage reports.
+
+Both of these services offer badges (dynamically updated images) that can be displayed on Github so that it's easy to see at a glance whether your build is passing and how much of the code base is covered by your tests.
 
 \section*{Software framework}
+
 To this end I implemented a \texttt{Strategy} class which implements basic functionality of a strategy such as tracking the player's history and computing the next move for the player.
 This \texttt{Strategy} class is never instantiated directly, but is instead subclassed by concrete implementations of strategies eg. \texttt{AllC}, \texttt{AllD}, \texttt{TitForTat} etc.
 This implementation should allow for any strategy to be implemented (including non-deterministic strategies) since the method that computes the next move for the strategy knows about both the player's own history as well as being passed the opponent's history.
