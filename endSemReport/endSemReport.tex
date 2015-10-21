@@ -94,7 +94,7 @@ Any strategy that employs non-deterministic play styles (eg. defect 75% of the t
 We must now multiply the continuation probability by the probability of that particular outcome, and we have to continue this `branch' of the outcome tree forever.
 For more complex strategies, the space of outcomes quickly becomes very large, and consequently, the expected payoff becomes very difficult to compute.
 
-\subsection*{Mistakes}
+\subsection*{Mistakes and fault tolerant strategies}
 
 Another possible complication of the outcome space is the addition of mistakes.
 Mistakes occur when a player intends to play a particular move, but instead they play a different move.
@@ -102,7 +102,42 @@ In the context of the iterated prisoner's dilemma, this occurs when a player int
 Since mistakes are probabilistic and can occur at any round, they serve to worsen the problem of exploding outcome space and associated difficulty in calculating expected payoffs.
 This project's primary goal was to determine a method of computing the expected payoff of an iterated prisoner's dilemma with mistakes in an efficient manner.
 
+In the presence of mistakes, some strategies fare better than others.
+In particular, it is a well known result \cite{axelrod} that the simple TFT strategy outperforms all other strategies in the absence of mistakes.
+However in the presence of mistakes, the TFT strategy displays poor `fault tolerance' because it loses the `robustness' property.
+For a rigorous definition of fault tolerance and robustness, refer to \cite{pelc} and \cite{pelcpelc}.
+Briefly, robustness is a measure of how a strategy performs against another strategy in a population consisting only of those two strategies.
+Informally, a robust strategy is said to be sometimes better and never worse than other strategies.
+A fault tolerant strategy is a strategy that is able to retain this robust quality, even in the face of mistakes.
+
+Since TFT is not particularly fault tolerant, modern game theorists have attempted to study strategies that are able to deal with faults while still remaining competitive.
+And in order to evaluate these strategies, it becomes necessary to efficiently and easily calculate their expected payoffs against other strategies.
+
 \begin{thebibliography}{9}
+
+    \bibitem{axelrod}
+        Robert Axelrod,
+        \emph{Effective choice in the Prisoner's Dilemma},
+        The Journal of Conflict Resolution,
+        Vol. 24,
+        No. 1,
+        1980.
+
+    \bibitem{pelcpelc}
+        Andrzej Pelc, Krzysztof J. Pelc,
+        \emph{Same Game, New Tricks: What Makes a Good Strategy in the Prisoner's Dilemma?},
+        The Journal of Conflict Resolution,
+        Vol. 35,
+        No 5,
+        2009.
+
+    \bibitem{pelc}
+        Andrzej Pelc,
+        \emph{Fault-tolerant strategies in the Iterated Prisoner's Dilemma},
+        Information Processing Letters,
+        Vol. 110,
+        No. 10,
+        2010.
 
     \bibitem{garciaandtraulsen}
         Julian Garcia, Arne Traulsen,
