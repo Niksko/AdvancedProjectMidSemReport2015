@@ -113,6 +113,35 @@ A fault tolerant strategy is a strategy that is able to retain this robust quali
 Since TFT is not particularly fault tolerant, modern game theorists have attempted to study strategies that are able to deal with faults while still remaining competitive.
 And in order to evaluate these strategies, it becomes necessary to efficiently and easily calculate their expected payoffs against other strategies.
 
+\section*{Software tools and techniques}
+
+In order to study the expected payoff, it was necessary to first design a software framework that allows for the construction, simulation and computation of scenarios in game theory.
+The code used in this project is open sourced under the GNU GPL v3 license and is available at https://github.com/computationalevolutionarydynamics/repeatedmistakes.
+
+Python was chosen as the language for development of this framework, due to both the author's familiarity with the language coupled with high quality libraries for numerical calculations, visualization and testing.
+In particular, this project made use of the Hypothesis property-based testing library \cite{hypothesis} and the Nose testing framework \cite{nose}.
+
+The Hypothesis library is inspired by the Haskell library `Quickcheck', and is a property-based form of testing.
+The chief difference is that instead of defining in terms of specific inputs and outputs, you define tests in terms of classes of input and their expected output.
+Hypothesis uses in intelligent search strategy to attempt to produce an input which falsifies the property.
+Hypothesis then reduces this input to the minimum falsifying example and returns this.
+
+As an example, here is how we might test a \texttt{reverse} method with conventional testing:
+
+Under Hypothesis, we can define a test
+
+<Talk about Nose a little>
+
+<Talk about Travis>
+
+<Talk about coverage>
+
+\section*{Software framework}
+To this end I implemented a \texttt{Strategy} class which implements basic functionality of a strategy such as tracking the player's history and computing the next move for the player.
+This \texttt{Strategy} class is never instantiated directly, but is instead subclassed by concrete implementations of strategies eg. \texttt{AllC}, \texttt{AllD}, \texttt{TitForTat} etc.
+This implementation should allow for any strategy to be implemented (including non-deterministic strategies) since the method that computes the next move for the strategy knows about both the player's own history as well as being passed the opponent's history.
+
+
 \begin{thebibliography}{9}
 
     \bibitem{axelrod}
@@ -160,6 +189,12 @@ And in order to evaluate these strategies, it becomes necessary to efficiently a
         \emph{Hypothesis},
         https://github.com/DRMacIver/hypothesis,
         2015.
+
+    \bibitem{nose}
+        \emph{Nose},
+        https://nose.readthedocs.org/en/latest/index.html,
+        Version 1.3.7.
+
 
     \bibitem{ross}
         Sheldon M. Ross,
