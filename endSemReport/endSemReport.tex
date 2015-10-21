@@ -174,10 +174,35 @@ Both of these services offer badges (dynamically updated images) that can be dis
 
 \section{Software framework}
 
+In order to design and test alternate methods of computing expected payoff, we need a framework that supports creation and simulation of strategies and payoffs.
 To this end I implemented a \texttt{Strategy} class which implements basic functionality of a strategy such as tracking the player's history and computing the next move for the player.
 This \texttt{Strategy} class is never instantiated directly, but is instead subclassed by concrete implementations of strategies eg. \texttt{AllC}, \texttt{AllD}, \texttt{TitForTat} etc.
 This implementation should allow for any strategy to be implemented (including non-deterministic strategies) since the method that computes the next move for the strategy knows about both the player's own history as well as being passed the opponent's history.
 
+We also implement a class for defining a payoff structure known as a payoff matrix.
+The payoff matrix encodes the payoffs for any combination of player actions, and so can be used to compute the payoff of a sequence of game results.
+
+\section{Calculation strategies}
+
+\subsection{Monte Carlo methods}
+
+The most basic calculation strategy is to simply simulate a large number of random games and to average the results.
+This class of methods are known as Monte Carlo methods.
+These methods are relatively easy to implement, but because they are by their nature randomized, we must conduct a large number of trials in order to arrive at an accurate result.
+
+One method of Monte Carlo simulation is to simply run a large, fixed number of trials.
+Although this is easy to implement, it doesn't provide the user with any estimate of accuracy.
+Accuracy of the result must simply be evaluated against known, closed form solutions where they are available.
+Then the number of trials used can be assumed to be accurate for other situations for which a closed form solution is not available.
+
+A more complex method of estimation is to compute the standard deviation of the estimator, and to stop conducting trials when this estimator standard deviation is within a certain threshold.
+This method and its derivation is explain in \cite{ross}.
+By computing the standard deviation of existing results, additional trials can be generated until eventually a guarantee of the accuracy of the answer is given.
+This result gives you a guarantee that the difference between the true value and the estimate you have produced is distributed with a given standard deviation.
+
+Both methods of Monte Carlo simulation where implemented, though in practice the former method was used because it is less computationally expensive and is also more widely used and understood.
+Both methods were also reimplemented to make use of multiple processors using the Python \texttt{multiprocessing} library.
+Since individual trials of the Monte Carlo simulation are independent, it is efficiently to compute the results of trials in parallel and to aggregate the results once trials have been completed.
 
 \begin{thebibliography}{9}
 
