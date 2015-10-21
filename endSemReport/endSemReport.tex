@@ -226,9 +226,9 @@ In order to efficiently perform this calculation with pruning, we use a queue ba
 After each term is computed, the associated history and the probability of reaching that state is stored on a queue, but only if the term that is produced is above the $\epsilon$ threshold.
 This way, unlikely outcomes are pruned until all outcomes become sufficiently unlikely and the algorithm terminates.
 
-The pseudocode for this algorithm can be found in figure
+The pseudocode for this algorithm can be found in listing \ref{calc_code}.
 
-\lstinputlisting[language=python,float=tp,label=calc_code,frame=tblr,breaklines=true]{calculation_pseudocode.py}
+\lstinputlisting[language=python,float,label=calc_code,caption=An algorithm for efficiently estimating expected payoff,frame=tblr,breaklines=true]{calculation_pseudocode.py}
 
 \begin{thebibliography}{9}
 
