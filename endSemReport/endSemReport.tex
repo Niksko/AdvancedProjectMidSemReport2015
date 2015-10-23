@@ -303,7 +303,11 @@ Once of the chief advantages of the calculation methods were that they were fast
 The smart brute force method took on the order of seconds to execute
 In contrast, the simulations took on the order of tens of minutes to execute on the powerful machines of the MCC.
 
-It terms of accuracy, as you might expect the calculations were more accurate for smaller minimum term sizes.
+Although the expected value only method was extremely fast (generally faster than a second), the results proved to be too inaccurate to be useful.
+The only time when the expected value method may produce good results is when the continuation probability is small, because it concentrates all of the mass of the expected payoff near the expected value.
+However the situations when the continuation probability is low is not often studied, and thus the usefulness of the expected value method is limited.
+
+In terms of accuracy, as you might expect the calculations were more accurate for smaller minimum term sizes.
 In general, the smart brute force method was accurate to within 1\% relative error for most combinations of continuation probability and mistake probability.
 There was a general trend that relative error decreased for smaller mistake probability.
 When the mistake probability is 0.1 or above, not only do the results for the smart brute force method rapidly degrade, but the calculation is also incredibly slow (on the order of 60 minutes in one particular case).
@@ -324,8 +328,8 @@ In figures \ref{simplex_good} and \ref{simplex_bad}, the states where the popula
 The arrows in the figures represent the direction of movement of the population distribution, and the coloration represents the speed at which the populations moves in these directions.
 
 \begin{figure}
-    \label{simplex_good}
     \caption{Simplex plots of the interaction between AllC, AllD and Tit For Tat. Parameters are continuation probability = 0.9, mistake probability = 0.0001. For the calculations the term cutoff size is 1e-6 and the number of Monte Carlo trials for the simulations is 100,000}
+    \label{simplex_good}
     \centering
         \begin{subfigure}[b]{0.5\textwidth}
             \includegraphics[width=\textwidth]{simplex_good_calcs}
@@ -338,8 +342,8 @@ The arrows in the figures represent the direction of movement of the population 
 \end{figure}
 
 \begin{figure}
-    \label{simplex_bad}
     \caption{Simplex plots of the interaction between Tit For Tat, Tit For 2 Tats and Win Stay, Lose Shift. Parameters are continuation probability = 0.9, mistake probability = 0.0001. For the calculations the term cutoff size is 1e-6 and the number of Monte Carlo trials for the simulations is 100,000}
+    \label{simplex_bad}
     \centering
         \begin{subfigure}[b]{0.5\textwidth}
             \includegraphics[width=\textwidth]{simplex_bad_calcs}
@@ -358,7 +362,21 @@ Despite the fact that the relative error is roughly the same in both of these ca
 This may indicate that the expected payoff method is only useful for certain combinations of strategies.
 Alternatively, since the simulations are prone to some error as well, it may simply indicate that this combination of strategies is very chaotic and is highly dependent on individual mistakes at key moments.
 
-\section{Conclusion}
+\section{Conclusion and future directions}
+
+In this project I have explored alternate methods of calculating the expected payoff of different strategies playing the iterated prisoner's dilemma with mistakes.
+I have designed and implemented a software framework for studying the iterated prisoner's dilemma, as well as methods for simulating and calculating expected payoffs.
+I have also gained valuable skills using Travis, Coveralls, Nose and Hypothesis for continuous integration and testing.
+The results from the data I have produced seem to indicate that the brute force method is accurate across a wide variety of parameters and strategies, as long as the mistake probability is less than 0.1.
+Unfortunately, the expected value method doesn't produce satisfactory results.
+
+Due to time constraints, I could not complete as thorough an analysis of the data that was produced as I would have liked.
+Additional analysis of the data could be undertaken, with the aim of identifying trends in the accuracy of results.
+It may be that certain strategies produce more accurate results than others.
+
+In addition, further examination of simplex plots and results produced by evolutionary dynamics calculations may reveal additional patterns.
+Preliminary analysis seems to indicate that when all of the expected payoffs are close together, even the small differences between the simulations and the calculations can produce vastly different results.
+Since this is the intended usage of these methods, further analysis of the actual results of simulations would be a good indicator towards the viability of the calculation methods.
 
 \begin{thebibliography}{9}
 
