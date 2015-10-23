@@ -18,7 +18,7 @@
 
 \begin{abstract}
 
-This project studies efficient methods to compute the expected payoff of an iterated prisoner's dilemma between two opponents.
+This project studied efficient methods to compute the expected payoff of an iterated prisoner's dilemma between two opponents.
 In order to efficiently compute these payoffs, the mathematics underpinning the iterated prisoners dilemma and the computation of expected payoff was analyzed with a view to improving in speed of computation over existing methods.
 A Monte-Carlo method of computing expected payoff was used as a benchmark against which two fast methods for computing payoff were compared.
 The results of these fast methods were then used to generate three-population simplex plots of evolutionary dynamics as a further benchmark.
@@ -56,7 +56,7 @@ However if it is optimal for both players to defect in the final round, then log
 By this logic, the optimal strategy is simply to always defect.
 In order to overcome this predictable and uninteresting pattern, we introduce the idea that the game length is determined by a repeated random event.
 After playing the first and subsequent rounds, the game continues for another round with probability $0 < \delta < 1$.
-This means that there is a always a chance that there will be another round of the game, and thus there is always the possibility that defection will carry consequences.
+This means that there is always a chance that there will be another round of the game, and thus there is always the possibility that defection will carry consequences.
 
 \subsection{Expected Payoff}
 
@@ -72,9 +72,9 @@ These strategies are known as Always Defect (AllD) and Always Cooperate (AllC) r
 More complicated strategies include:
 
 \begin{itemize}
-    \item Tit For Tat (TFT): If the opponent cooperate last round, you cooperate. If the opponent defected last round, you defect. In the first round, the player cooperates.
-    \item Win Stay, Lose Shift (WSLS): If the outcome is a win for the player (R payoff or T payoff) then the previous move is repeated. If the outcome is a lose for the player (P payoff or S payoff) then the opposite move is chosen in the next round.
-    \item Grim: Cooperates until the opponent defects, and then unconditionally defects from then on.
+    \item Tit For Tat (TFT): If the opponent cooperated last round, you cooperate. If the opponent defected last round, you defect. In the first round, the player cooperates.
+    \item Win Stay, Lose Shift (WSLS): If the outcome is a win for the player (R payoff or T payoff) then the previous move is repeated. If the outcome is a lose for the player (P payoff or S payoff) then the opposite move is chosen in the next round. In the first round the player cooperates.
+    \item Grim: The player cooperates until the opponent defects, and then unconditionally defects from then on.
 \end{itemize}
 
 It is useful to be able to compare the effectiveness of each of these strategies when paired against another strategy.
@@ -102,6 +102,7 @@ For more complex strategies, the space of outcomes quickly becomes very large, a
 Another possible complication of the outcome space is the addition of mistakes.
 Mistakes occur when a player intends to play a particular move, but instead they play a different move.
 In the context of the iterated prisoner's dilemma, this occurs when a player intends to cooperate, but instead they defect (or vice-versa).
+The mechanism for this mistake is unimportant, but physically it can manifest as an error in signalling, communication, or in the technology used to record outcomes.
 Since mistakes are probabilistic and can occur at any round, they serve to worsen the problem of exploding outcome space and associated difficulty in calculating expected payoffs.
 This project's primary goal was to determine a method of computing the expected payoff of an iterated prisoner's dilemma with mistakes in an efficient manner.
 
@@ -114,20 +115,20 @@ Informally, a robust strategy is said to be sometimes better and never worse tha
 A fault tolerant strategy is a strategy that is able to retain this robust quality, even in the face of mistakes.
 
 Since TFT is not particularly fault tolerant, modern game theorists have attempted to study strategies that are able to deal with faults while still remaining competitive.
-And in order to evaluate these strategies, it becomes necessary to efficiently and easily calculate their expected payoffs against other strategies.
+In order to evaluate these strategies, it becomes necessary to efficiently and easily calculate their expected payoffs against other strategies.
 
 \section{Software tools and techniques}
 
 In order to study the expected payoff, it was necessary to first design a software framework that allows for the construction, simulation and computation of scenarios in game theory.
 The code used in this project is open sourced under the GNU GPL v3 license and is available at https://github.com/computationalevolutionarydynamics/repeatedmistakes.
 
-Python was chosen as the language for development of this framework, due to both the author's familiarity with the language coupled with high quality libraries for numerical calculations, visualization and testing.
+Python was chosen as the language for development of this framework, due to both the author's familiarity with the language coupled with high quality libraries for numerical calculation, visualization and testing.
 In particular, this project made use of the Hypothesis property-based testing library \cite{hypothesis} and the Nose testing framework \cite{nose}.
 I also used the Travis CI continuous integration service and the Coveralls test coverage service.
 
 \subsection{Hypothesis and Nose}
 The Hypothesis library is inspired by the Haskell library `Quickcheck', and is a property-based form of testing.
-The chief difference is that instead of defining in terms of specific inputs and outputs, you define tests in terms of classes of input and their expected output.
+The chief difference is that instead of defining tests in terms of specific inputs and outputs, tests are defined in terms of classes of input and their expected output.
 Hypothesis uses in intelligent search strategy to attempt to produce an input which falsifies the property.
 Hypothesis then reduces this input to the minimum falsifying example and returns this.
 
@@ -143,15 +144,15 @@ For example, if the \texttt{reverse} method didn't correctly handle empty string
 
 Hypothesis proved to be an invaluable tool in this project because it allowed me to define the general properties that should be obeyed for any strategy and any history, and then evaluate my implementations of the strategies against these properties.
 
-One issue I ran into with using Hypothesis was running tests can be slow when compared to standard unit testing.
+One issue I ran into with using Hypothesis was that running tests can be slow when compared to standard unit testing.
 For example, running a test to ensure that strategies always return the correct length of history over 8 different strategies can take on the order of seconds.
 Although this is not a huge concern, this did cause some issues with Travis as discussed below.
 
-Another issue with Hypothesis is that occasionally it would produce an error because it was unable to produce enough test data satisfied the requirements given.
+Another issue with Hypothesis is that occasionally it would produce an error because it was unable to produce enough test data to satisfy the requirements given.
 This is most likely due to inexperience with Hypothesis, and could likely be remedied by optimizing the functions that construct test data.
 
 Finally, since Hypothesis's testing is fundamentally probabilistic in nature, occasionally tests would fail even though the code that changed did not affect them.
-This occurs because Hypothesis uses some randomized test data to find edge cases, and sometimes that test data doesn't hit upon a falsifying example.
+This occurs because Hypothesis uses randomized test data to find edge cases, and sometimes that test data doesn't hit upon a falsifying example.
 This can be remedied by increasing the number of examples to test for each property, however there is always the possibility that a falsifying example will be skipped over.
 
 In addition to Hypothesis, I made use of the Nose testing framework.
@@ -205,13 +206,13 @@ Accuracy of the result must simply be evaluated against known, closed form solut
 Then the number of trials used can be assumed to be accurate for other situations for which a closed form solution is not available.
 
 A more complex method of estimation is to compute the standard deviation of the estimator, and to stop conducting trials when this estimator standard deviation is within a certain threshold.
-This method and its derivation is explain in \cite{ross}.
+This method and its derivation is explained in \cite{ross}.
 By computing the standard deviation of existing results, additional trials can be generated until eventually a guarantee of the accuracy of the answer is given.
 This result gives you a guarantee that the difference between the true value and the estimate you have produced is distributed with a given standard deviation.
 
-Both methods of Monte Carlo simulation where implemented, though in practice the former method was used because it is less computationally expensive and is also more widely used and understood.
+Both methods of Monte Carlo simulation were implemented, though in practice the former method was used because it is less computationally expensive and is also more widely used and understood.
 Both methods were also reimplemented to make use of multiple processors using the Python \texttt{multiprocessing} library.
-Since individual trials of the Monte Carlo simulation are independent, it is efficiently to compute the results of trials in parallel and to aggregate the results once trials have been completed.
+Since individual trials of the Monte Carlo simulation are independent, it is efficient to compute the results of trials in parallel and to aggregate the results once trials have been completed.
 
 \subsection{Brute force approach}
 
@@ -239,6 +240,8 @@ This approach assumes that all games last a fixed length.
 In order to achieve the most accurate result, this fixed game length is chosen to be the expected number of rounds given the continuation probability.
 Since the length of games follows a geometric distribution, this value is $\frac{1}{\delta}$ where $\delta$ is the continuation probability.
 With this added limitation we can use the similar algorithm to the one described in listing \ref{calc_code} but only for games of the given length.
+
+\clearpage
 
 \section{Results}
 
@@ -278,10 +281,10 @@ Some machines feature a high number of cores, some feature a low number of cores
 
 Submission of jobs to the cluster involves the use of the Sun Grid Engine job system.
 Jobs are defined in .pbs files which contain information such as the maximum allowable resources for the job and the instructions to execute.
-In order to speed up the process of making all of these job files and submitting them, I wrote a shell script
-This scrip creates lots of job files and a single batch file to submit them all, based off of iterating through some arrays in which you can define the parameter values for the jobs.
+In order to speed up the process of making all of these job files and submitting them, I wrote a shell script.
+This script creates lots of job files and a single batch file to submit them all, based off of iterating through some arrays in which you can define the parameter values for the jobs.
 
-Learning to execute code on the cluster proved to be a bit of a challenge.
+Learning to execute code on the cluster proved to be a challenge.
 In order to execute code on the cluster, all Python code had to be put into a single .py file.
 In addition, the Python libraries installed on the MCC are limited, and installing additional libraries was not an option.
 This presented some problems in data generation and analysis, because the output had to be collected in many small text files.
@@ -299,8 +302,8 @@ However this meant that some simulations did not execute in time for this report
 Once all the results had been generated and collected from the cluster it was necessary to evaluate the calculation methods against the simulations.
 For the purposes of this project, the simulation values were taken to be the `canonical' values, and the calculated values were compared against them.
 
-Once of the chief advantages of the calculation methods were that they were fast.
-The smart brute force method took on the order of seconds to execute
+One of the chief advantages of the calculation methods is that they are fast.
+The smart brute force method takes on the order of seconds to execute.
 In contrast, the simulations took on the order of tens of minutes to execute on the powerful machines of the MCC.
 
 Although the expected value only method was extremely fast (generally faster than a second), the results proved to be too inaccurate to be useful.
@@ -308,10 +311,12 @@ The only time when the expected value method may produce good results is when th
 However the situations when the continuation probability is low is not often studied, and thus the usefulness of the expected value method is limited.
 
 In terms of accuracy, as you might expect the calculations were more accurate for smaller minimum term sizes.
-In general, the smart brute force method was accurate to within 1\% relative error for most combinations of continuation probability and mistake probability.
+In general, the smart brute force method was accurate to less than 1\% relative error for most combinations of continuation probability and mistake probability.
 There was a general trend that relative error decreased for smaller mistake probability.
 When the mistake probability is 0.1 or above, not only do the results for the smart brute force method rapidly degrade, but the calculation is also incredibly slow (on the order of 60 minutes in one particular case).
 A table showing the relative error in expected payoffs fort Tit For 2 Tats against Inverse Tit For Tat can be seen in figure \ref{error_table}.
+Data for this table was aggregated with the help of some shell scripts and organised using the \texttt{pandas} library.
+The figure was produced using the \texttt{seaborn} packaged for data visualization.
 
 \begin{figure}
     \caption{A table of the relative error in expected payoffs for the strategy Tit For 2 Tats against the strategy Inverse Tit For Tat in the iterated prisoner's dilemma. Parameters: term cutoff size: 1e-6, number of Monte Carlo trials: 100,000}
@@ -322,10 +327,10 @@ A table showing the relative error in expected payoffs fort Tit For 2 Tats again
 
 Since the eventual goal of this research is to use the expected payoff as part of computational evolutionary dynamics simulations, it seemed prudent to run a few of these simulations with the results we obtained.
 The purpose and derivation of the figures found in figures \ref{simplex_good} and \ref{simplex_bad} are beyond the scope of this report.
-However in brief, these plots show how a populations consisting of individuals that play one of three strategies evolves according to `replicator' dynamics.
+However in brief, these plots show how populations consisting of individuals that play one of three strategies evolves according to `replicator' dynamics.
 In these plots, the expected payoffs are used to determine the relative `fitness' of the strategies, and this fitness determines how often each strategy reproduces.
 In figures \ref{simplex_good} and \ref{simplex_bad}, the states where the population is entirely composed of players of one strategy are in the corners.
-The arrows in the figures represent the direction of movement of the population distribution, and the coloration represents the speed at which the populations moves in these directions.
+The arrows in the figures represent the direction of movement of the population distribution, and the coloration represents the speed at which the population moves in these directions.
 
 \begin{figure}
     \caption{Simplex plots of the interaction between AllC, AllD and Tit For Tat. Parameters are continuation probability = 0.9, mistake probability = 0.0001. For the calculations the term cutoff size is 1e-6 and the number of Monte Carlo trials for the simulations is 100,000}
@@ -357,10 +362,12 @@ The arrows in the figures represent the direction of movement of the population 
 \end{figure}
 
 As you can see, figure \ref{simplex_good} shows results where the calculations and simulations produce very similar phase plots.
-However in figure \ref{simplex_bad} shows results where the calculations and simulations produce very different phase plots.
+However figure \ref{simplex_bad} shows results where the calculations and simulations produce very different phase plots.
 Despite the fact that the relative error is roughly the same in both of these cases, my theory is that the sensitivity of the results to the initial expected payoffs causes this stark difference.
 This may indicate that the expected payoff method is only useful for certain combinations of strategies.
 Alternatively, since the simulations are prone to some error as well, it may simply indicate that this combination of strategies is very chaotic and is highly dependent on individual mistakes at key moments.
+
+\clearpage
 
 \section{Conclusion and future directions}
 
@@ -368,6 +375,7 @@ In this project I have explored alternate methods of calculating the expected pa
 I have designed and implemented a software framework for studying the iterated prisoner's dilemma, as well as methods for simulating and calculating expected payoffs.
 I have also gained valuable skills using Travis, Coveralls, Nose and Hypothesis for continuous integration and testing.
 The results from the data I have produced seem to indicate that the brute force method is accurate across a wide variety of parameters and strategies, as long as the mistake probability is less than 0.1.
+Additionally, these accurate results can be produced in a fraction of the time that it takes to simulate the expected payoffs.
 Unfortunately, the expected value method doesn't produce satisfactory results.
 
 Due to time constraints, I could not complete as thorough an analysis of the data that was produced as I would have liked.
