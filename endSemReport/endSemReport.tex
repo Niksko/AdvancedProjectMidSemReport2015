@@ -3,6 +3,7 @@
 \usepackage[colorlinks = true, citecolor=red, urlcolor=blue]{hyperref}
 \usepackage{listings}
 \usepackage{graphicx}
+\usepackage{subcaption}
 
 \parindent=2pt
 \parskip=1ex plus 0.5ex minus 0.2ex
@@ -314,6 +315,48 @@ A table showing the relative error in expected payoffs fort Tit For 2 Tats again
     \centering
         \includegraphics[width=0.5\textwidth]{error_table}
 \end{figure}
+
+Since the eventual goal of this research is to use the expected payoff as part of computational evolutionary dynamics simulations, it seemed prudent to run a few of these simulations with the results we obtained.
+The purpose and derivation of the figures found in figures \ref{simplex_good} and \ref{simplex_bad} are beyond the scope of this report.
+However in brief, these plots show how a populations consisting of individuals that play one of three strategies evolves according to `replicator' dynamics.
+In these plots, the expected payoffs are used to determine the relative `fitness' of the strategies, and this fitness determines how often each strategy reproduces.
+In figures \ref{simplex_good} and \ref{simplex_bad}, the states where the population is entirely composed of players of one strategy are in the corners.
+The arrows in the figures represent the direction of movement of the population distribution, and the coloration represents the speed at which the populations moves in these directions.
+
+\begin{figure}
+    \label{simplex_good}
+    \caption{Simplex plots of the interaction between AllC, AllD and Tit For Tat. Parameters are continuation probability = 0.9, mistake probability = 0.0001. For the calculations the term cutoff size is 1e-6 and the number of Monte Carlo trials for the simulations is 100,000}
+    \centering
+        \begin{subfigure}[b]{0.5\textwidth}
+            \includegraphics[width=\textwidth]{simplex_good_calcs}
+            \caption{Calculations}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.5\textwidth}
+            \includegraphics[width=\textwidth]{simplex_good_sims}
+            \caption{Simulations}
+        \end{subfigure}
+\end{figure}
+
+\begin{figure}
+    \label{simplex_bad}
+    \caption{Simplex plots of the interaction between Tit For Tat, Tit For 2 Tats and Win Stay, Lose Shift. Parameters are continuation probability = 0.9, mistake probability = 0.0001. For the calculations the term cutoff size is 1e-6 and the number of Monte Carlo trials for the simulations is 100,000}
+    \centering
+        \begin{subfigure}[b]{0.5\textwidth}
+            \includegraphics[width=\textwidth]{simplex_bad_calcs}
+            \caption{Calculations}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.5\textwidth}
+            \includegraphics[width=\textwidth]{simplex_bad_sims}
+            \caption{Simulations}
+        \end{subfigure}
+
+\end{figure}
+
+As you can see, figure \ref{simplex_good} shows results where the calculations and simulations produce very similar phase plots.
+However in figure \ref{simplex_bad} shows results where the calculations and simulations produce very different phase plots.
+Despite the fact that the relative error is roughly the same in both of these cases, my theory is that the sensitivity of the results to the initial expected payoffs causes this stark difference.
+This may indicate that the expected payoff method is only useful for certain combinations of strategies.
+Alternatively, since the simulations are prone to some error as well, it may simply indicate that this combination of strategies is very chaotic and is highly dependent on individual mistakes at key moments.
 
 \section{Conclusion}
 
