@@ -2,6 +2,7 @@
 \usepackage[margin=1in]{geometry}
 \usepackage[colorlinks = true, citecolor=red, urlcolor=blue]{hyperref}
 \usepackage{listings}
+\usepackage{graphicx}
 
 \parindent=2pt
 \parskip=1ex plus 0.5ex minus 0.2ex
@@ -239,6 +240,80 @@ Since the length of games follows a geometric distribution, this value is $\frac
 With this added limitation we can use the similar algorithm to the one described in listing \ref{calc_code} but only for games of the given length.
 
 \section{Results}
+
+In order to evaluate the different methods for finding the expected payoff, all three methods were run over a range of inputs.
+I tested all combinations of the following parameters:
+
+\begin{itemize}
+    \item Continuation probability: $0.5, 0.6, 0.7, 0.8, 0.9, 0.99, 0.999$
+    \item Mistake probability: $0.1, 0.01, 0.0001, 0.00001, 0.000001$
+\end{itemize}
+
+For the calculation based methods, term cutoff sizes of 1e-4, 1e-5 and 1e-6 were were computed across all other combinations of parameters.
+The calculation based code was executed on my personal computer.
+For the Monte Carlo simulations, the simulations were run with 100,000 trials in the Monash Campus Cluster (see below).
+Finally, each combination of strategies was run for each of the parameter combinations.
+The strategies used were:
+
+\begin{itemize}
+    \item AllC
+    \item Suspicious AllC
+    \item AllD
+    \item Nice AllD
+    \item Tit For Tat
+    \item Suspicious Tit For Tat
+    \item Inverse Tit For Tat
+    \item Suspicious Inverse Tit For Tat
+    \item Win Stay, Lose Shift
+    \item Grim
+    \item Tit For 2 Tats
+\end{itemize}
+
+\subsection{Monash Campus Cluster}
+
+The Monash Campus Cluster (MCC) was used to run the computationally intensive simulation code.
+The MCC is a 200 server heterogeneous cluster, which means that it is composed of many machines with different hardware capabilities.
+Some machines feature a high number of cores, some feature a low number of cores but a large amount of RAM, and others have GPU capabilities.
+
+Submission of jobs to the cluster involves the use of the Sun Grid Engine job system.
+Jobs are defined in .pbs files which contain information such as the maximum allowable resources for the job and the instructions to execute.
+In order to speed up the process of making all of these job files and submitting them, I wrote a shell script
+This scrip creates lots of job files and a single batch file to submit them all, based off of iterating through some arrays in which you can define the parameter values for the jobs.
+
+Learning to execute code on the cluster proved to be a bit of a challenge.
+In order to execute code on the cluster, all Python code had to be put into a single .py file.
+In addition, the Python libraries installed on the MCC are limited, and installing additional libraries was not an option.
+This presented some problems in data generation and analysis, because the output had to be collected in many small text files.
+It would have been preferable to use a Python library such as \texttt{pandas} for the data collection, however this was not installed.
+
+Multiprocessing on the cluster also proved difficult.
+In order to enable multiprocessing, a special `parallel environment' option must be specified.
+There are two such parallel environments on the MCC: the \texttt{smp} environment and the \texttt{orte\_adv} environment.
+The \texttt{smp} environment executes the code on a single machine with the requested number of cores, while the \texttt{orte\_adv} environment executes your code across the requested number of cores, but potentially across multiple machines.
+Since I wasn't sure that the code would work under the \texttt{orte\_adv} environment, I opted for the \texttt{smp} environment.
+However this meant that some simulations did not execute in time for this report because the requested resources were being used by others on the cluster.
+
+\subsection{Comparison of results}
+
+Once all the results had been generated and collected from the cluster it was necessary to evaluate the calculation methods against the simulations.
+For the purposes of this project, the simulation values were taken to be the `canonical' values, and the calculated values were compared against them.
+
+Once of the chief advantages of the calculation methods were that they were fast.
+The smart brute force method took on the order of seconds to execute
+In contrast, the simulations took on the order of tens of minutes to execute on the powerful machines of the MCC.
+
+It terms of accuracy, as you might expect the calculations were more accurate for smaller minimum term sizes.
+In general, the smart brute force method was accurate to within 1\% relative error for most combinations of continuation probability and mistake probability.
+There was a general trend that relative error decreased for smaller mistake probability.
+When the mistake probability is 0.1 or above, not only do the results for the smart brute force method rapidly degrade, but the calculation is also incredibly slow (on the order of 60 minutes in one particular case).
+A table showing the relative error in expected payoffs fort Tit For 2 Tats against Inverse Tit For Tat can be seen in figure \ref{error_table}.
+
+\begin{figure}
+    \caption{A table of the relative error in expected payoffs for the strategy Tit For 2 Tats against the strategy Inverse Tit For Tat in the iterated prisoner's dilemma. Parameters: term cutoff size: 1e-6, number of Monte Carlo trials: 100,000}
+    \label{error_table}
+    \centering
+        \includegraphics[width=0.5\textwidth]{error_table}
+\end{figure}
 
 \section{Conclusion}
 
